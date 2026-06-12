@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { updateMeal } from "@/data/meals";
 
 const foodItemSchema = z.object({
+  foodItemId: z.string().uuid().optional(),
   name: z.string().trim().min(1, "El nombre del alimento es obligatorio"),
   calories: z.number().min(0, "Las calorías no pueden ser negativas"),
   quantity: z.number().min(0.01, "La cantidad debe ser mayor a 0"),

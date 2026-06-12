@@ -12,8 +12,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { createMealAction } from "./actions";
+import { FoodItemCombobox } from "@/components/food-item-combobox";
+import type { FoodItemOption } from "@/data/meals";
 
 type FoodItemRow = {
+  foodItemId?: string;
   name: string;
   calories: string;
   quantity: string;
@@ -28,7 +31,11 @@ function formatDateTimeLocal(date: Date): string {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
-export function NewMealForm() {
+type NewMealFormProps = {
+  foodItemOptions: FoodItemOption[];
+};
+
+export function NewMealForm({ foodItemOptions }: NewMealFormProps) {
   const [name, setName] = useState("");
   const [eatenAt, setEatenAt] = useState(() => formatDateTimeLocal(new Date()));
   const [foodItems, setFoodItems] = useState<FoodItemRow[]>([
@@ -51,6 +58,29 @@ export function NewMealForm() {
     );
   };
 
+  const selectFoodItem = (index: number, option: FoodItemOption) => {
+    setFoodItems((items) =>
+      items.map((item, i) =>
+        i === index
+          ? {
+              ...item,
+              foodItemId: option.id,
+              name: option.name,
+              calories: String(option.calories),
+            }
+          : item
+      )
+    );
+  };
+
+  const updateFoodItemName = (index: number, value: string) => {
+    setFoodItems((items) =>
+      items.map((item, i) =>
+        i === index ? { ...item, name: value, foodItemId: undefined } : item
+      )
+    );
+  };
+
   const handleSubmit = (formEvent: React.FormEvent<HTMLFormElement>) => {
     formEvent.preventDefault();
     setError(null);
@@ -61,6 +91,7 @@ export function NewMealForm() {
           name,
           eatenAt: new Date(eatenAt),
           foodItems: foodItems.map((item) => ({
+            foodItemId: item.foodItemId,
             name: item.name,
             calories: Number(item.calories),
             quantity: Number(item.quantity),
@@ -121,12 +152,13 @@ export function NewMealForm() {
             <div key={index} className="flex flex-col gap-3 sm:flex-row sm:items-end">
               <div className="flex flex-1 flex-col gap-2">
                 <Label htmlFor={`food-name-${index}`}>Nombre</Label>
-                <Input
+                <FoodItemCombobox
                   id={`food-name-${index}`}
                   value={item.name}
-                  onChange={(e) => updateFoodItem(index, "name", e.target.value)}
+                  options={foodItemOptions}
+                  onValueChange={(value) => updateFoodItemName(index, value)}
+                  onSelect={(option) => selectFoodItem(index, option)}
                   placeholder="Ej. Manzana"
-                  required
                 />
               </div>
 

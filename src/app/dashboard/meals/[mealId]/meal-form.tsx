@@ -12,9 +12,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { updateMealAction } from "./actions";
-import type { MealWithFoodItems } from "@/data/meals";
+import { FoodItemCombobox } from "@/components/food-item-combobox";
+import type { FoodItemOption, MealWithFoodItems } from "@/data/meals";
 
 type FoodItemRow = {
+  foodItemId?: string;
   name: string;
   calories: string;
   quantity: string;
@@ -31,13 +33,15 @@ function formatDateTimeLocal(date: Date): string {
 
 type EditMealFormProps = {
   meal: MealWithFoodItems;
+  foodItemOptions: FoodItemOption[];
 };
 
-export function EditMealForm({ meal }: EditMealFormProps) {
+export function EditMealForm({ meal, foodItemOptions }: EditMealFormProps) {
   const [name, setName] = useState(meal.name);
   const [eatenAt, setEatenAt] = useState(() => formatDateTimeLocal(meal.eatenAt));
   const [foodItems, setFoodItems] = useState<FoodItemRow[]>(
     meal.foodItems.map((item) => ({
+      foodItemId: item.id,
       name: item.name,
       calories: String(item.calories),
       quantity: String(item.quantity),
@@ -60,6 +64,29 @@ export function EditMealForm({ meal }: EditMealFormProps) {
     );
   };
 
+  const selectFoodItem = (index: number, option: FoodItemOption) => {
+    setFoodItems((items) =>
+      items.map((item, i) =>
+        i === index
+          ? {
+              ...item,
+              foodItemId: option.id,
+              name: option.name,
+              calories: String(option.calories),
+            }
+          : item
+      )
+    );
+  };
+
+  const updateFoodItemName = (index: number, value: string) => {
+    setFoodItems((items) =>
+      items.map((item, i) =>
+        i === index ? { ...item, name: value, foodItemId: undefined } : item
+      )
+    );
+  };
+
   const handleSubmit = (formEvent: React.FormEvent<HTMLFormElement>) => {
     formEvent.preventDefault();
     setError(null);
@@ -71,6 +98,7 @@ export function EditMealForm({ meal }: EditMealFormProps) {
           name,
           eatenAt: new Date(eatenAt),
           foodItems: foodItems.map((item) => ({
+            foodItemId: item.foodItemId,
             name: item.name,
             calories: Number(item.calories),
             quantity: Number(item.quantity),
@@ -131,12 +159,13 @@ export function EditMealForm({ meal }: EditMealFormProps) {
             <div key={index} className="flex flex-col gap-3 sm:flex-row sm:items-end">
               <div className="flex flex-1 flex-col gap-2">
                 <Label htmlFor={`food-name-${index}`}>Nombre</Label>
-                <Input
+                <FoodItemCombobox
                   id={`food-name-${index}`}
                   value={item.name}
-                  onChange={(e) => updateFoodItem(index, "name", e.target.value)}
+                  options={foodItemOptions}
+                  onValueChange={(value) => updateFoodItemName(index, value)}
+                  onSelect={(option) => selectFoodItem(index, option)}
                   placeholder="Ej. Manzana"
-                  required
                 />
               </div>
 

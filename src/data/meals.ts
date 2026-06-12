@@ -118,8 +118,21 @@ export async function getMealById(mealId: string): Promise<MealWithFoodItems | n
   };
 }
 
+export type FoodItemOption = {
+  id: string;
+  name: string;
+  calories: number;
+};
+
+export async function getFoodItems(): Promise<FoodItemOption[]> {
+  return db
+    .select({ id: foodItems.id, name: foodItems.name, calories: foodItems.calories })
+    .from(foodItems)
+    .orderBy(foodItems.name);
+}
+
 export type UpdateMealFoodItem = {
-  id?: string;
+  foodItemId?: string;
   name: string;
   calories: number;
   quantity: number;
@@ -159,23 +172,30 @@ export async function updateMeal(mealId: string, meal: UpdateMeal): Promise<void
   await db.delete(mealFoodItems).where(eq(mealFoodItems.mealId, mealId));
 
   for (const item of meal.foodItems) {
-    const [createdFoodItem] = await db
-      .insert(foodItems)
-      .values({
-        name: item.name,
-        calories: item.calories,
-      })
-      .returning({ id: foodItems.id });
+    let foodItemId = item.foodItemId;
+
+    if (!foodItemId) {
+      const [createdFoodItem] = await db
+        .insert(foodItems)
+        .values({
+          name: item.name,
+          calories: item.calories,
+        })
+        .returning({ id: foodItems.id });
+
+      foodItemId = createdFoodItem.id;
+    }
 
     await db.insert(mealFoodItems).values({
       mealId,
-      foodItemId: createdFoodItem.id,
+      foodItemId,
       quantity: item.quantity,
     });
   }
 }
 
 export type NewMealFoodItem = {
+  foodItemId?: string;
   name: string;
   calories: number;
   quantity: number;
@@ -204,17 +224,23 @@ export async function createMeal(meal: NewMeal): Promise<{ id: string }> {
     .returning({ id: meals.id });
 
   for (const item of meal.foodItems) {
-    const [createdFoodItem] = await db
-      .insert(foodItems)
-      .values({
-        name: item.name,
-        calories: item.calories,
-      })
-      .returning({ id: foodItems.id });
+    let foodItemId = item.foodItemId;
+
+    if (!foodItemId) {
+      const [createdFoodItem] = await db
+        .insert(foodItems)
+        .values({
+          name: item.name,
+          calories: item.calories,
+        })
+        .returning({ id: foodItems.id });
+
+      foodItemId = createdFoodItem.id;
+    }
 
     await db.insert(mealFoodItems).values({
       mealId: createdMeal.id,
-      foodItemId: createdFoodItem.id,
+      foodItemId,
       quantity: item.quantity,
     });
   }

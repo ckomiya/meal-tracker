@@ -1,6 +1,9 @@
+import { getFoodItems } from "@/data/meals";
 import { NewMealForm } from "./meal-form";
 
-export default function NewMealPage() {
+export default async function NewMealPage() {
+  const foodItemOptions = await getFoodItems();
+
   return (
     <div className="flex flex-1 flex-col gap-6 p-6 sm:p-10">
       <div className="flex flex-col gap-2">
@@ -10,7 +13,7 @@ export default function NewMealPage() {
         </p>
       </div>
 
-      <NewMealForm />
+      <NewMealForm foodItemOptions={foodItemOptions} />
     </div>
   );
 }

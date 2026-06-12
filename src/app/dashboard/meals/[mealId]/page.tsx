@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getMealById } from "@/data/meals";
+import { getFoodItems, getMealById } from "@/data/meals";
 import { EditMealForm } from "./meal-form";
 
 type EditMealPageProps = {
@@ -14,6 +14,8 @@ export default async function EditMealPage({ params }: EditMealPageProps) {
     notFound();
   }
 
+  const foodItemOptions = await getFoodItems();
+
   return (
     <div className="flex flex-1 flex-col gap-6 p-6 sm:p-10">
       <div className="flex flex-col gap-2">
@@ -23,7 +25,7 @@ export default async function EditMealPage({ params }: EditMealPageProps) {
         </p>
       </div>
 
-      <EditMealForm meal={meal} />
+      <EditMealForm meal={meal} foodItemOptions={foodItemOptions} />
     </div>
   );
 }
