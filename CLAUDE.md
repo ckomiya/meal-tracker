@@ -4,7 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Documentación obligatoria
 
-Antes de generar o modificar cualquier código, Claude Code debe consultar SIEMPRE primero el archivo de documentación relevante dentro del directorio `/docs` (por ejemplo, `docs/ui.md` para todo lo relacionado con la interfaz de usuario). El código generado debe seguir los estándares definidos en esos documentos.
+Antes de generar o modificar cualquier código, Claude Code debe consultar SIEMPRE primero el archivo de documentación relevante dentro del directorio `/docs`. El código generado debe seguir los estándares definidos en esos documentos:
+
+- `docs/ui.md` — estándares para todo lo relacionado con la interfaz de usuario.
+- `docs/data-fetching.md` — estándares para la obtención de datos y consultas a la base de datos.
+- `docs/data-mutations.md` — estándares para mutaciones de datos mediante Server Actions.
+- `docs/auth.md` — estándares para la autenticación de la aplicación.
 
 ## Project Status
 
