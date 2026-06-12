@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Documentación obligatoria
+
+Antes de generar o modificar cualquier código, Claude Code debe consultar SIEMPRE primero el archivo de documentación relevante dentro del directorio `/docs` (por ejemplo, `docs/ui.md` para todo lo relacionado con la interfaz de usuario). El código generado debe seguir los estándares definidos en esos documentos.
+
 ## Project Status
 
 This is a Next.js app freshly bootstrapped with `create-next-app` (App Router, TypeScript, Tailwind CSS). No custom features have been implemented yet — `src/app/page.tsx` still contains the default starter page.
